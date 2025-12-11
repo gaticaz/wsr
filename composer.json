@@ -1,11 +1,11 @@
 {
-    "name": "danielneis/moodle-auth_ws",
-    "description": "This plugins allows your Moodle users to be authenticated against an external webservice",
+    "name": "gaticaz/wsr",
+    "description": "Este complemento permite que sus usuarios de Moodle se autentiquen contra un servicio web externo - Organizado para SIU Guarani",
     "license": "GPL-3.0-or-later",
     "authors": [
         {
-            "name": "Daniel Neis Araujo",
-            "email": "danielneis@gmail.com"
+            "name": "Gaticaz",
+            "email": "martin.gatica@uner.edu.ar"
         }
     ],
     "type": "moodle-auth",
@@ -13,6 +13,6 @@
         "composer/installers": "~1.0"
     },
     "extra": {
-        "installer-name": "ws"
+        "installer-name": "wsr"
     }
 }

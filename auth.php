@@ -26,19 +26,21 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->libdir.'/authlib.php');
+require_once($CFG->libdir . '/authlib.php');
 
 /**
  * External webservice authentication plugin.
  */
 
-class auth_plugin_wsr extends auth_plugin_base {
+class auth_plugin_wsr extends auth_plugin_base
+{
 
-public $datos;
+    public $datos;
     /**
      * Constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->authtype = 'wsr';
         $this->config = get_config('auth_wsr');
 
@@ -63,18 +65,21 @@ public $datos;
      * @param string $password The password
      * @return bool Authentication success or failure.
      */
-    public function user_login($username, $password) {
+    public function user_login($username, $password)
+    {
 
         $functionname = $this->config->auth_function;
-	$clave = (md5($password));
-        $params  = array($this->config->auth_function_username_paramname => $username,
-                         $this->config->auth_function_password_paramname => $clave,
-			 $this->config->auth_method => $metodo,
-			 $this->config->auth_username_rest => $username,
-			 $this->config->auth_password_rest => $password);
+        $clave = (md5($password));
+        $params = [
+            $this->config->auth_function_username_paramname => $username,
+            $this->config->auth_function_password_paramname => $clave,
+            $this->config->auth_method => $this->config->auth_method,
+            $this->config->auth_username_rest => $username,
+            $this->config->auth_password_rest => $password
+        ];
 
         $result = $this->call_wsr($this->config->serverurl, $functionname, $params);
-	return $result;
+        return $result;
     }
 
     /**
@@ -86,51 +91,56 @@ public $datos;
      * @param bool $doupdates  Optional: set to true to force an update of existing accounts
      * @return int 0 means success, 1 means failure
      */
-    public function sync_users(progress_trace $trace, $doupdates = false) {
+    public function sync_users(progress_trace $trace, $doupdates = false)
+    {
         return true;
     }
 
-    public function get_userinfo($username) {
+    public function get_userinfo($username)
+    {
         return array();
     }
 
-    private function call_wsr($serverurl, $functionname, $params = array()) {
+    private function call_wsr($serverurl, $functionname, $params = array())
+    {
 
         $params = array_merge($this->config->wsr_default_params, $params);
-	if (isset($params['a']) && !empty($params['a'])) {
-		$params['a'] = '/'.$params['a'].'/';}
-	else {
-		$params['a'] = '/';
-	}
-        $serverurl = $serverurl . $functionname.'/'.$params['identificacion'].$params['a'].$params['clave'];
+        if (isset($params['a']) && !empty($params['a'])) {
+            $params['a'] = '/' . $params['a'] . '/';
+        } else {
+            $params['a'] = '/';
+        }
+        $serverurl = $serverurl . $functionname . '/' . $params['identificacion'] . $params['a'] . $params['clave'];
 
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $serverurl);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $serverurl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         switch ($params['metodo']) {
-        case 'basic': curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-		break;
-	case 'digest': curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-		break;
-	}
-	$user = $this->config->auth_username_rest;
-	$pass = $this->config->auth_password_rest;
-	curl_setopt($ch, CURLOPT_USERPWD, "$user:$pass");
-	$headr = array();
-	$headr[] = 'Content-length: 0';
-	$headr[] = 'Content-type: application/json';
-	curl_setopt($ch, CURLOPT_HTTPHEADER,$headr);
+            case 'basic':
+                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                break;
+            case 'digest':
+                curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+                break;
+        }
+        $user = $this->config->auth_username_rest;
+        $pass = $this->config->auth_password_rest;
+        curl_setopt($ch, CURLOPT_USERPWD, "$user:$pass");
+        $headr = array();
+        $headr[] = 'Content-length: 0';
+        $headr[] = 'Content-type: application/json';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headr);
 
-	try {
-		$res = curl_exec($ch);
-		curl_close($ch);
-		$ok = json_decode($res);
-		if($ok->valido == 1){
-			return true;
-		} else {
-			return false;
-		}
+        try {
+            $res = curl_exec($ch);
+            curl_close($ch);
+            $ok = json_decode($res);
+            if ($ok->valido == 1) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception $e) {
             echo "Exception:\n";
             echo $e->getMessage();
@@ -139,7 +149,8 @@ public $datos;
         }
     }
 
-    public function prevent_local_passwords() {
+    public function prevent_local_passwords()
+    {
         return true;
     }
 
@@ -150,7 +161,8 @@ public $datos;
      *
      * @return bool
      */
-    public function is_internal() {
+    public function is_internal()
+    {
         return false;
     }
 
@@ -162,7 +174,8 @@ public $datos;
      *
      * @return bool true means automatically copy data from ext to user table
      */
-    public function is_synchronised_with_external() {
+    public function is_synchronised_with_external()
+    {
         return false;
     }
 
@@ -172,7 +185,8 @@ public $datos;
      *
      * @return bool
      */
-    public function can_change_password() {
+    public function can_change_password()
+    {
         return false;
     }
 
@@ -182,7 +196,8 @@ public $datos;
      *
      * @return moodle_url
      */
-    public function change_password_url() {
+    public function change_password_url()
+    {
         if (isset($this->config->changepasswordurl) && !empty($this->config->changepasswordurl)) {
             return new moodle_url($this->config->changepasswordurl);
         } else {
@@ -195,7 +210,8 @@ public $datos;
      *
      * @return bool
      */
-    public function can_reset_password() {
+    public function can_reset_password()
+    {
         return false;
     }
 }
