@@ -1,23 +1,23 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// Este archivo forma parte de Moodle - http://moodle.org/
 //
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Moodle es software libre: puede redistribuirlo y/o modificarlo
+// bajo los términos de la Licencia Pública General de GNU publicada por
+// la Free Software Foundation, ya sea la versión 3 de la Licencia o
+// (a su elección) cualquier versión posterior.
 //
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Moodle se distribuye con la esperanza de que sea útil,
+// pero SIN NINGUNA GARANTÍA; ni siquiera la garantía implícita de
+// COMERCIABILIDAD o IDONEIDAD PARA UN PROPÓSITO PARTICULAR. Consulte la
+// Licencia Pública General de GNU para obtener más detalles.
 //
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// Debería haber recibido una copia de la Licencia Pública General de GNU
+// junto con Moodle. De no ser así, consulte <http://www.gnu.org/licenses/>.
 
 /**
- * Authentication Plugin: External Webservice Authentication
+ * Plugin de autenticación: Autenticación de servicio web externo
  *
- * Checks against an external webservice.
+ * Comprueba con un servicio web externo, pensado para usar con siu guaraní.
  *
  * @package    auth_wsr
  * @author     UNER FCEDU based on Daniel Neis Araujo work
@@ -27,9 +27,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/authlib.php');
+require_once(__DIR__ . '/classes/bcrypt.php');
+
+use core\http_client;
 
 /**
- * External webservice authentication plugin.
+ * Plugin de autenticación: Autenticación de servicio web externo.
  */
 
 class auth_plugin_wsr extends auth_plugin_base
@@ -44,42 +47,53 @@ class auth_plugin_wsr extends auth_plugin_base
         $this->authtype = 'wsr';
         $this->config = get_config('auth_wsr');
 
-        if (isset($this->config->default_params) && !empty($this->config->default_params)) {
+        if (!empty($this->config->default_params)) {
             $params = explode(',', $this->config->default_params);
-            $defaultparams = array();
+            $defaultparams = [];
+
             foreach ($params as $p) {
-                list($paramname, $value) = explode(':', $p);
+                if (strpos($p, ':') === false) {
+                    continue;
+                }
+                [$paramname, $value] = explode(':', $p, 2);
                 $defaultparams[$paramname] = $value;
             }
             $this->config->wsr_default_params = $defaultparams;
         } else {
-            $this->config->wsr_default_params = array();
+            $this->config->wsr_default_params = [];
         }
     }
 
     /**
-     * Returns true if the username and password work and false if they are
-     * wrong or don't exist.
+     * Devuelve verdadero si el nombre de usuario y la contraseña funcionan y 
+     * falso si son incorrectos o no existen.
      *
-     * @param string $username The username
-     * @param string $password The password
-     * @return bool Authentication success or failure.
+     * @param string $username El nombre de usuario
+     * @param string $password La contraseña
+     * @return bool Autenticación exitosa o fallida.
      */
-    public function user_login($username, $password)
+    public function user_login($username, $password): bool
     {
+        if (empty($username) || empty($password)) {
+            return false;
+        }
 
-        $functionname = $this->config->auth_function;
-        $clave = (md5($password));
+        $functionname = $this->config->auth_function ?? null;
+        if (empty($functionname)) {
+            return false;
+        }
+        // $clave = (md5($password));
+        $clave = $this->encrypt_password($password);
+
         $params = [
             $this->config->auth_function_username_paramname => $username,
             $this->config->auth_function_password_paramname => $clave,
-            $this->config->auth_method => $this->config->auth_method,
-            $this->config->auth_username_rest => $username,
-            $this->config->auth_password_rest => $password
+            'metodo' => $this->config->auth_method ?? null,
+            'identificacion' => $username,
+            'clave' => $clave,
         ];
 
-        $result = $this->call_wsr($this->config->serverurl, $functionname, $params);
-        return $result;
+        return $this->call_wsr($this->config->serverurl, $functionname, $params);
     }
 
     /**
@@ -91,127 +105,171 @@ class auth_plugin_wsr extends auth_plugin_base
      * @param bool $doupdates  Optional: set to true to force an update of existing accounts
      * @return int 0 means success, 1 means failure
      */
-    public function sync_users(progress_trace $trace, $doupdates = false)
+    public function sync_users(progress_trace $trace, $doupdates = false): int
     {
-        return true;
+        return 0;
     }
 
-    public function get_userinfo($username)
+    /**
+     * User info is managed externally.
+     *
+     * @param string $username
+     * @return array
+     */
+    public function get_userinfo($username): array
     {
-        return array();
+        return [];
     }
 
-    private function call_wsr($serverurl, $functionname, $params = array())
+    /**
+     * Call external web service.
+     *
+     * @param string $serverurl
+     * @param string $functionname
+     * @param array $params
+     * @return bool
+     */
+    private function call_wsr($serverurl, $functionname, $params = array()): bool
     {
 
         $params = array_merge($this->config->wsr_default_params, $params);
-        if (isset($params['a']) && !empty($params['a'])) {
-            $params['a'] = '/' . $params['a'] . '/';
-        } else {
-            $params['a'] = '/';
-        }
-        $serverurl = $serverurl . $functionname . '/' . $params['identificacion'] . $params['a'] . $params['clave'];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $serverurl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $a = !empty($params['a']) ? '/' . $params['a'] . '/' : '/';
 
-        switch ($params['metodo']) {
-            case 'basic':
+        $url = rtrim($serverurl, '/') . '/'
+            . $functionname . '/'
+            . ($params['identificacion'] ?? '') . $a
+            . ($params['clave'] ?? '');
+
+        $ch = curl_init($url);
+
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Content-length: 0'
+            ],
+        ]);
+
+        if (!empty($params['metodo'])) {
+            if ($params['metodo'] === 'basic') {
                 curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-                break;
-            case 'digest':
+            } elseif ($params['metodo'] === 'digest') {
                 curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-                break;
-        }
-        $user = $this->config->auth_username_rest;
-        $pass = $this->config->auth_password_rest;
-        curl_setopt($ch, CURLOPT_USERPWD, "$user:$pass");
-        $headr = array();
-        $headr[] = 'Content-length: 0';
-        $headr[] = 'Content-type: application/json';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headr);
-
-        try {
-            $res = curl_exec($ch);
-            curl_close($ch);
-            $ok = json_decode($res);
-            if ($ok->valido == 1) {
-                return true;
-            } else {
-                return false;
             }
-        } catch (Exception $e) {
-            echo "Exception:\n";
-            echo $e->getMessage();
-            echo "===\n";
+        }
+
+        if (!empty($this->config->auth_username_rest) && !empty($this->config->auth_password_rest)) {
+            curl_setopt(
+                $ch,
+                CURLOPT_USERPWD,
+                $this->config->auth_username_rest . ':' . $this->config->auth_password_rest
+            );
+        }
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        if ($response === false) {
             return false;
         }
+
+        $data = json_decode($response);
+
+        if (json_last_error() !== JSON_ERROR_NONE || !is_object($data)) {
+            return false;
+        }
+
+        return !empty($data->valido);
     }
 
-    public function prevent_local_passwords()
+    /**
+     * Prevent local passwords.
+     *
+     * @return bool
+     */
+    public function prevent_local_passwords(): bool
     {
         return true;
     }
 
     /**
-     * Returns true if this authentication plugin is "internal".
-     *
-     * Internal plugins use password hashes from Moodle user table for authentication.
+     * Internal auth?
      *
      * @return bool
      */
-    public function is_internal()
+    public function is_internal(): bool
     {
         return false;
     }
 
     /**
-     * Indicates if moodle should automatically update internal user
-     * records with data from external sources using the information
-     * from auth_plugin_base::get_userinfo().
-     * The external service is responsible to update user records.
-     *
-     * @return bool true means automatically copy data from ext to user table
-     */
-    public function is_synchronised_with_external()
-    {
-        return false;
-    }
-
-    /**
-     * Returns true if this authentication plugin can change the user's
-     * password.
+     * Synchronised with external?
      *
      * @return bool
      */
-    public function can_change_password()
+    public function is_synchronised_with_external(): bool
     {
         return false;
     }
 
     /**
-     * Returns the URL for changing the user's pw, or empty if the default can
-     * be used.
+     * Can change password?
      *
-     * @return moodle_url
+     * @return bool
+     */
+    public function can_change_password(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Password change URL.
+     *
+     * @return moodle_url|null
      */
     public function change_password_url()
     {
-        if (isset($this->config->changepasswordurl) && !empty($this->config->changepasswordurl)) {
+        if (!empty($this->config->changepasswordurl)) {
             return new moodle_url($this->config->changepasswordurl);
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
-     * Returns true if plugin allows resetting of internal password.
+     * Can reset password?
      *
      * @return bool
      */
-    public function can_reset_password()
+    public function can_reset_password(): bool
     {
         return false;
+    }
+
+    /**
+     * Encrypt password for WSR authentication.
+     *
+     * @param string $password
+     * @return string
+     */
+    private function encrypt_password(string $password): string
+    {
+        // Config option: bcrypt | md5
+        $method = $this->config->password_encryption ?? 'md5';
+
+        if ($method === 'bcrypt') {
+            try {
+                $bcrypt = new \bcrypt(12);
+                $hash = $bcrypt->hash($password);
+                if ($hash !== false) {
+                    return $hash;
+                }
+            } catch (\Throwable $e) {
+                // Fallback to md5
+            }
+        }
+
+        // Default / fallback behavior (original)
+        return md5($password);
     }
 }

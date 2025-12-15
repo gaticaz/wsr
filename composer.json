@@ -10,9 +10,12 @@
     ],
     "type": "moodle-auth",
     "require": {
-        "composer/installers": "~1.0"
+        "composer/installers": "^2.2"
     },
     "extra": {
-        "installer-name": "wsr"
+        "installer-name": "wsr",
+        "moodle-plugin": {
+            "component": "auth_wsr"
+        }
     }
 }

@@ -18,20 +18,27 @@
  * External webservice auth settings and defaults.
  *
  * @package auth_wsr
- * @copyright  2019 UNER FCEDU based on Daniel Neis Araujo work
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2019 UNER FCEDU
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
+
+    // Heading.
+    $settings->add(new admin_setting_heading(
+        'auth_wsr_settings',
+        get_string('pluginname', 'auth_wsr'),
+        get_string('auth_wsdescription', 'auth_wsr')
+    ));
 
     $settings->add(new admin_setting_configtext(
         'auth_wsr/serverurl',
         get_string('serverurl', 'auth_wsr'),
         get_string('serverurl_desc', 'auth_wsr'),
         '',
-        PARAM_TEXT
+        PARAM_URL
     ));
 
     $settings->add(new admin_setting_configtext(
@@ -66,15 +73,31 @@ if ($ADMIN->fulltree) {
         PARAM_TEXT
     ));
 
-    $authopt = array();
-    $authopt[AUTH_GUARANI_BASIC] = get_string('auth_guarani_basic', 'auth_wsr');
-    $authopt[AUTH_GUARANI_DIGEST] = get_string('auth_guarani_digest', 'auth_wsr');
+    $encryptoptions = [
+        'md5'    => 'MD5 (compatibilidad / legado)',
+        'bcrypt' => 'bcrypt (recomendado, más seguro)'
+    ];
+
+    $settings->add(new admin_setting_configselect(
+        'auth_wsr/password_encryption',
+        get_string('password_encryption', 'auth_wsr'),
+        get_string('password_encryption_desc', 'auth_wsr'),
+        'md5',
+        $encryptoptions
+    ));
+
+
+    // Auth method options.
+    $authopt = [
+        'basic'  => get_string('auth_guarani_basic', 'auth_wsr'),
+        'digest' => get_string('auth_guarani_digest', 'auth_wsr'),
+    ];
 
     $settings->add(new admin_setting_configselect(
         'auth_wsr/auth_method',
-        new lang_string('guarani_auth_method_key', 'auth_wsr'),
-        new lang_string('guarani_auth_method', 'auth_wsr'),
-        AUTH_GUARANI_BASIC,
+        get_string('guarani_auth_method_key', 'auth_wsr'),
+        get_string('guarani_auth_method', 'auth_wsr'),
+        'basic',
         $authopt
     ));
 
@@ -115,18 +138,20 @@ if ($ADMIN->fulltree) {
         get_string('changepasswordurl', 'auth_wsr'),
         get_string('changepasswordurl_desc', 'auth_wsr'),
         '',
-        PARAM_TEXT
+        PARAM_URL
     ));
 
-    $deleteopt = array();
-    $deleteopt[AUTH_REMOVEUSER_KEEP] = get_string('auth_remove_keep', 'auth');
-    $deleteopt[AUTH_REMOVEUSER_SUSPEND] = get_string('auth_remove_suspend', 'auth');
-    $deleteopt[AUTH_REMOVEUSER_FULLDELETE] = get_string('auth_remove_delete', 'auth');
+    // User removal options.
+    $deleteopt = [
+        AUTH_REMOVEUSER_KEEP       => get_string('auth_remove_keep', 'auth'),
+        AUTH_REMOVEUSER_SUSPEND    => get_string('auth_remove_suspend', 'auth'),
+        AUTH_REMOVEUSER_FULLDELETE => get_string('auth_remove_delete', 'auth'),
+    ];
 
     $settings->add(new admin_setting_configselect(
         'auth_wsr/removeuser',
-        new lang_string('auth_remove_user_key', 'auth'),
-        new lang_string('auth_remove_user', 'auth'),
+        get_string('auth_remove_user_key', 'auth'),
+        get_string('auth_remove_user', 'auth'),
         AUTH_REMOVEUSER_KEEP,
         $deleteopt
     ));

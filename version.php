@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019080000;
-$plugin->requires  = 2017051500;
-$plugin->component = 'auth_wsr'; // Full name of the plugin (used for diagnostics).
+$plugin->version   = 2025070100;
+$plugin->requires  = 2022041900; // Moodle 4.0+
+$plugin->component = 'auth_wsr';
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release = '1.1.0 (Moodle 4.x)';

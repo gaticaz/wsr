@@ -24,16 +24,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
+$tasks = [
+    [
         'classname' => '\auth_wsr\task\sync_users',
-        'blocking' => 0,
-        'minute' => 'R',
-        'hour' => 'R',
+        'blocking' => false,
+        'minute' => '0',
+        'hour' => '2',
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*',
-        'disabled' => 1
-    )
-);
-
+        'disabled' => false
+    ]
+];

@@ -27,36 +27,47 @@ namespace auth_wsr\task;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Sync users task class
- *
  * @package   auth_wsr
- * @copyright UNER FCEDU baed on Daniel Neis Araujo <danielneis@gmail.com> work
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class sync_users extends \core\task\scheduled_task {
+class sync_users extends \core\task\scheduled_task
+{
 
     /**
      * Name for this task.
      *
      * @return string
      */
-    public function get_name() {
+    public function get_name(): string
+    {
         return get_string('syncuserstask', 'auth_wsr');
     }
 
     /**
      * Run task for synchronising users.
+     * @return void
      */
-    public function execute() {
+    public function execute(): void
+    {
         if (!is_enabled_auth('wsr')) {
-            mtrace('auth_wsr plugin is disabled, synchronisation stopped', 2);
+            mtrace('[auth_wsr] El plugin está deshabilitado. Sincronización cancelada.');
             return;
         }
 
         $auth = get_auth_plugin('wsr');
+
+        if (!method_exists($auth, 'sync_users')) {
+            mtrace('[auth_wsr] El plugin no implementa sync_users().');
+            return;
+        }
+
         $config = get_config('auth_wsr');
         $trace = new \text_progress_trace();
         $update = !empty($config->updateusers);
+
+        mtrace('[auth_wsr] Iniciando sincronización de usuarios.');
+
         $auth->sync_users($trace, $update);
+
+        mtrace('[auth_wsr] Sincronización finalizada.');
     }
 }

@@ -15,41 +15,61 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'auth_wsr', language 'en'.
+ * Strings for component 'auth_wsr', language 'es'.
  *
  * @package   auth_wsr
  * @copyright UNER FCEDU based on Daniel Neis Araujo work
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Aut. por servicio web';
-$string['auth_function'] = 'Función para autenticación';
-$string['auth_function_desc'] = 'Nombre de la función para la autenticación';
-$string['auth_function_password_paramname'] = 'Nombre del parámetro Password';
-$string['auth_function_password_paramname_desc'] = 'Nombre del parámetro para enviar clave como servicio web.';
-$string['auth_function_resultClass'] = 'Clase del resultado';
-$string['auth_function_resultClass_desc'] = 'El nombre de la clase que contiene el resultado del servicioweb.';
-$string['auth_function_resultField'] = 'Campo del resultado';
-$string['auth_function_resultField_desc'] = 'El campo de la clase que contiene un boolean como resultado del servicio web.';
-$string['auth_function_username_paramname'] = 'Nombre del parámetro Nombre de usuario (autenticación)';
-$string['auth_function_username_paramname_desc'] = 'Nombre del parámetro para enviar "nombre de usuario" al servicio web.';
-$string['auth_wsdescription'] = 'Este complemento autentica contra un servicio web externo.';
-$string['changepasswordurl'] = 'URL para cambiar clave';
-$string['changepasswordurl_desc'] = 'URL própia para que los usuario cambien su clave.';
-$string['default_params'] = 'Parámetro por defecto';
-$string['default_params_desc'] = 'Parámetros para ser usados en cada llamado a servicio web.<br> Solo soporta a:parámetro Ejemplo: https:......./a/........';
-$string['protocol'] = 'Protocolo';
-$string['protocol_desc'] = 'El protocolo es Rest';
+$string['pluginname'] = 'Autenticación por servicio web';
+$string['pluginname_help'] = 'Permite autenticar usuarios contra un servicio web externo.';
+
+$string['auth_wsdescription'] = 'Este complemento autentica usuarios contra un servicio web externo.';
+
 $string['serverurl'] = 'URL del servidor de autenticación';
-$string['serverurl_desc'] = 'URL completa para que el webservice ejecute las funciones de autenticación.';
-$string['syncuserstask'] = 'Sincronizar usuarios desde auth_ws';
+$string['serverurl_desc'] = 'URL completa del servicio web que ejecuta la autenticación.';
+
+$string['default_params'] = 'Parámetros por defecto';
+$string['default_params_desc'] = 'Parámetros enviados en cada llamada al servicio web. Formato: clave:valor,clave:valor';
+
+$string['auth_function'] = 'Función para autenticación';
+$string['auth_function_desc'] = 'Nombre de la función del servicio web utilizada para autenticar.';
+
+$string['auth_function_username_paramname'] = 'Parámetro de usuario';
+$string['auth_function_username_paramname_desc'] = 'Nombre del parámetro que representa el nombre de usuario en el servicio web.';
+
+$string['auth_function_password_paramname'] = 'Parámetro de contraseña';
+$string['auth_function_password_paramname_desc'] = 'Nombre del parámetro que representa la contraseña en el servicio web.';
+
+$string['auth_function_resultClass'] = 'Clase de resultado';
+$string['auth_function_resultClass_desc'] = 'Clase que contiene el resultado devuelto por el servicio web.';
+
+$string['auth_function_resultField'] = 'Campo de resultado';
+$string['auth_function_resultField_desc'] = 'Campo de la clase de resultado que indica si la autenticación fue válida.';
+
 $string['guarani_auth_method_key'] = 'Método de autenticación';
-$string['guarani_auth_method'] = 'Valor de autenticación para la consulta Rest';
-$string['auth_guarani_basic'] = 'basic';
-$string['auth_guarani_digest'] = 'digest';
-$string['auth_username_rest'] = 'Usuario conexión Rest';
-$string['auth_username_rest_desc'] = 'Es el usuario para la conexión Rest';
-$string['auth_password_rest'] = 'Clave conexión Rest';
-$string['auth_password_rest_desc'] = 'Es la clave para la conexión Rest';
+$string['guarani_auth_method'] = 'Método utilizado para la autenticación REST';
+
+$string['auth_guarani_basic'] = 'Basic';
+$string['auth_guarani_digest'] = 'Digest';
+
+$string['auth_username_rest'] = 'Usuario REST';
+$string['auth_username_rest_desc'] = 'Usuario utilizado para la conexión al servicio REST.';
+
+$string['auth_password_rest'] = 'Contraseña REST';
+$string['auth_password_rest_desc'] = 'Contraseña utilizada para la conexión al servicio REST.';
+
+$string['changepasswordurl'] = 'URL para cambio de contraseña';
+$string['changepasswordurl_desc'] = 'URL externa donde los usuarios pueden cambiar su contraseña.';
+
+$string['syncuserstask'] = 'Sincronizar usuarios desde auth_wsr';
+
+$string['password_encryption'] = 'Cifrado de la clave';
+$string['password_encryption_desc'] = 'Algoritmo utilizado para cifrar la clave enviada al servicio web. Use MD5 solo por compatibilidad con sistemas antiguos.';
 
 
+/**
+ * Privacy API
+ */
+$string['privacy:metadata'] = 'El plugin auth_wsr no almacena datos personales.';

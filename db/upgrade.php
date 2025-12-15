@@ -25,17 +25,34 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Function to upgrade auth_wsr.
- * @param int $oldversion the version we are upgrading from
- * @return bool result
+ * Upgrade function for auth_wsr.
+ *
+ * @param int $oldversion
+ * @return bool
  */
-function xmldb_auth_wsr_upgrade($oldversion) {
+function xmldb_auth_wsr_upgrade($oldversion)
+{
+    global $DB;
 
-    if ($oldversion < 2019011000) {
-        // Convert info in config plugins from auth/wsr to auth_wsr.
+    // Legacy upgrade: migrate old auth/wsr config to auth_wsr.
+    if ($oldversion < 2019021200) {
+
         upgrade_fix_config_auth_plugin_names('wsr');
         upgrade_fix_config_auth_plugin_defaults('wsr');
+
         upgrade_plugin_savepoint(true, 2019021200, 'auth', 'wsr');
     }
+
+    /*
+     * Future upgrades go here.
+     *
+     * Example:
+     *
+     * if ($oldversion < 2024010100) {
+     *     // New upgrade step.
+     *     upgrade_plugin_savepoint(true, 2024010100, 'auth', 'wsr');
+     * }
+     */
+
     return true;
 }
