@@ -97,13 +97,13 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * This plugin is intended only to authenticate users.
-     * User synchronization must be done by external service,
-     * using Moodle's webservices.
+     * Este plugin está diseñado solo para autenticar usuarios.
+     * La sincronización de usuarios debe ser realizada por un servicio externo,
+     * utilizando los servicios web de Moodle.
      *
      * @param progress_trace $trace
-     * @param bool $doupdates  Optional: set to true to force an update of existing accounts
-     * @return int 0 means success, 1 means failure
+     * @param bool $doupdates  Opcional: set to true para forzar una actualización de cuentas existentes
+     * @return int 0 significa éxito, 1 significa error
      */
     public function sync_users(progress_trace $trace, $doupdates = false): int
     {
@@ -122,7 +122,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Call external web service.
+     * Llama al servicio web externo.
      *
      * @param string $serverurl
      * @param string $functionname
@@ -131,7 +131,6 @@ class auth_plugin_wsr extends auth_plugin_base
      */
     private function call_wsr($serverurl, $functionname, $params = array()): bool
     {
-
         $params = array_merge($this->config->wsr_default_params, $params);
 
         $a = !empty($params['a']) ? '/' . $params['a'] . '/' : '/';
@@ -184,7 +183,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Prevent local passwords.
+     * ¿Prevenir contrasen?a local?
      *
      * @return bool
      */
@@ -194,7 +193,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Internal auth?
+     * ¿Es autenticación interna?
      *
      * @return bool
      */
@@ -204,7 +203,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Synchronised with external?
+     * ¿Sincronizado con externo?
      *
      * @return bool
      */
@@ -214,7 +213,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Can change password?
+     * ¿Puede cambiar la contrasen?a?
      *
      * @return bool
      */
@@ -224,7 +223,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Password change URL.
+     * URL para cambio de contrasen?a.
      *
      * @return moodle_url|null
      */
@@ -237,7 +236,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Can reset password?
+     * ¿Puede resetear la contraseña?
      *
      * @return bool
      */
@@ -247,7 +246,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Encrypt password for WSR authentication.
+     * Encriptar contrasen?a para autenticación WSR.
      *
      * @param string $password
      * @return string

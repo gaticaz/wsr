@@ -1,31 +1,36 @@
 <?php
 
-class bcrypt {
+class bcrypt
+{
         private $rounds;
-        public function __construct($rounds = 12) {
-                if(CRYPT_BLOWFISH != 1) {
+        public function __construct($rounds = 12)
+        {
+                if (CRYPT_BLOWFISH != 1) {
                         throw new Exception("bcrypt not supported in this installation. See http://php.net/crypt");
                 }
 
                 $this->rounds = $rounds;
         }
 
-        public function hash($input) {
+        public function hash($input)
+        {
                 $hash = crypt($input, $this->getSalt());
 
-                if(strlen($hash) > 13)
+                if (strlen($hash) > 13)
                         return $hash;
 
                 return false;
         }
 
-        public function verify($input, $existingHash) {
+        public function verify($input, $existingHash)
+        {
                 $hash = crypt($input, $existingHash);
 
                 return $hash === $existingHash;
         }
 
-        private function getSalt() {
+        private function getSalt()
+        {
                 $salt = sprintf('$2a$%02d$', $this->rounds);
 
                 $bytes = $this->getRandomBytes(16);
@@ -36,31 +41,36 @@ class bcrypt {
         }
 
         private $randomState;
-        private function getRandomBytes($count) {
+        private function getRandomBytes($count)
+        {
                 $bytes = '';
 
-                if(function_exists('openssl_random_pseudo_bytes') &&
-                                (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN')) { // OpenSSL slow on Win
+                if (
+                        function_exists('openssl_random_pseudo_bytes') &&
+                        (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN')
+                ) { // OpenSSL slow on Win
                         $bytes = openssl_random_pseudo_bytes($count);
                 }
 
-                if($bytes === '' && is_readable('/dev/urandom') &&
-                                ($hRand = @fopen('/dev/urandom', 'rb')) !== FALSE) {
+                if (
+                        $bytes === '' && is_readable('/dev/urandom') &&
+                        ($hRand = @fopen('/dev/urandom', 'rb')) !== FALSE
+                ) {
                         $bytes = fread($hRand, $count);
                         fclose($hRand);
                 }
 
-                if(strlen($bytes) < $count) {
+                if (strlen($bytes) < $count) {
                         $bytes = '';
 
-                        if($this->randomState === null) {
+                        if ($this->randomState === null) {
                                 $this->randomState = microtime();
-                                if(function_exists('getmypid')) {
+                                if (function_exists('getmypid')) {
                                         $this->randomState .= getmypid();
                                 }
                         }
 
-                        for($i = 0; $i < $count; $i += 16) {
+                        for ($i = 0; $i < $count; $i += 16) {
                                 $this->randomState = md5(microtime() . $this->randomState);
 
                                 if (PHP_VERSION >= '5') {
@@ -76,7 +86,8 @@ class bcrypt {
                 return $bytes;
         }
 
-        private function encodeBytes($input) {
+        private function encodeBytes($input)
+        {
                 // The following is code from the PHP Password Hashing Framework
                 $itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -105,5 +116,3 @@ class bcrypt {
                 return $output;
         }
 }
-
-?>
