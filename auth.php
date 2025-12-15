@@ -2,25 +2,25 @@
 // Este archivo forma parte de Moodle - http://moodle.org/
 //
 // Moodle es software libre: puede redistribuirlo y/o modificarlo
-// bajo los tÈrminos de la Licencia P˙blica General de GNU publicada por
-// la Free Software Foundation, ya sea la versiÛn 3 de la Licencia o
-// (a su elecciÛn) cualquier versiÛn posterior.
+// bajo los t√©rminos de la Licencia P√∫blica General de GNU publicada por
+// la Free Software Foundation, ya sea la versi√≥n 3 de la Licencia o
+// (a su elecci√≥n) cualquier versi√≥n posterior.
 //
-// Moodle se distribuye con la esperanza de que sea ˙til,
-// pero SIN NINGUNA GARANTÕA; ni siquiera la garantÌa implÌcita de
-// COMERCIABILIDAD o IDONEIDAD PARA UN PROP”SITO PARTICULAR. Consulte la
-// Licencia P˙blica General de GNU para obtener m·s detalles.
+// Moodle se distribuye con la esperanza de que sea √∫til,
+// pero SIN NINGUNA GARANT√çA; ni siquiera la garant√≠a impl√≠cita de
+// COMERCIABILIDAD o IDONEIDAD PARA UN PROP√ìSITO PARTICULAR. Consulte la
+// Licencia P√∫blica General de GNU para obtener m√°s detalles.
 //
-// DeberÌa haber recibido una copia de la Licencia P˙blica General de GNU
-// junto con Moodle. De no ser asÌ, consulte <http://www.gnu.org/licenses/>.
+// Deber√≠a haber recibido una copia de la Licencia P√∫blica General de GNU
+// junto con Moodle. De no ser as√≠, consulte <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin de autenticaciÛn: AutenticaciÛn de servicio web externo
+ * Plugin de autenticaci√≥n: Autenticaci√≥n de servicio web externo
  *
- * Comprueba con un servicio web externo, pensado para usar con siu guaranÌ.
+ * Comprueba con un servicio web externo, pensado para usar con siu guaran√≠.
  *
  * @package    auth_wsr
- * @author     UNER FCEDU based on Daniel Neis Araujo work
+ * @author     UNER FCEDU basado en el trabajo de Daniel Neis Araujo.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
@@ -32,7 +32,7 @@ require_once(__DIR__ . '/classes/bcrypt.php');
 use core\http_client;
 
 /**
- * Plugin de autenticaciÛn: AutenticaciÛn de servicio web externo.
+ * Plugin de autenticaci√≥n: Autenticaci√≥n de servicio web externo.
  */
 
 class auth_plugin_wsr extends auth_plugin_base
@@ -65,12 +65,12 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Devuelve verdadero si el nombre de usuario y la contraseÒa funcionan y 
+     * Devuelve verdadero si el nombre de usuario y la contrase√±a funcionan y 
      * falso si son incorrectos o no existen.
      *
      * @param string $username El nombre de usuario
-     * @param string $password La contraseÒa
-     * @return bool AutenticaciÛn exitosa o fallida.
+     * @param string $password La contrase√±a
+     * @return bool Autenticaci√≥n exitosa o fallida.
      */
     public function user_login($username, $password): bool
     {
@@ -97,13 +97,13 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Este plugin est· diseÒado solo para autenticar usuarios.
-     * La sincronizaciÛn de usuarios debe ser realizada por un servicio externo,
+     * Este plugin est√° dise√±ado solo para autenticar usuarios.
+     * La sincronizaci√≥n de usuarios debe ser realizada por un servicio externo,
      * utilizando los servicios web de Moodle.
      *
      * @param progress_trace $trace
-     * @param bool $doupdates  Opcional: set to true para forzar una actualizaciÛn de cuentas existentes
-     * @return int 0 significa Èxito, 1 significa error
+     * @param bool $doupdates  Opcional: poner a true para forzar una actualizaci√≥n de cuentas existentes
+     * @return int 0 significa √©xito, 1 significa error
      */
     public function sync_users(progress_trace $trace, $doupdates = false): int
     {
@@ -111,7 +111,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * User info is managed externally.
+     * La informaci√≥n del usuario se gestiona externamente.
      *
      * @param string $username
      * @return array
@@ -183,7 +183,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * øPrevenir contrasen?a local?
+     * ¬øPrevenir contrase√±a local?
      *
      * @return bool
      */
@@ -193,7 +193,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * øEs autenticaciÛn interna?
+     * ¬øEs autenticaci√≥n interna?
      *
      * @return bool
      */
@@ -203,7 +203,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * øSincronizado con externo?
+     * ¬øSincronizado con externo?
      *
      * @return bool
      */
@@ -213,7 +213,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * øPuede cambiar la contrasen?a?
+     * ¬øPuede cambiar la contrase√±a?
      *
      * @return bool
      */
@@ -223,7 +223,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * URL para cambio de contrasen?a.
+     * URL para cambio de contrase√±a.
      *
      * @return moodle_url|null
      */
@@ -236,7 +236,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * øPuede resetear la contraseÒa?
+     * ¬øPuede resetear la contrase√±a?
      *
      * @return bool
      */
@@ -246,7 +246,7 @@ class auth_plugin_wsr extends auth_plugin_base
     }
 
     /**
-     * Encriptar contrasen?a para autenticaciÛn WSR.
+     * Encriptar contrase√±a para autenticaci√≥n WSR.
      *
      * @param string $password
      * @return string
