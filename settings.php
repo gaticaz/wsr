@@ -2,26 +2,27 @@
 // Este archivo forma parte de Moodle - http://moodle.org/
 //
 // Moodle es software libre: puede redistribuirlo y/o modificarlo
-// bajo los términos de la Licencia Pública General de GNU publicada por
-// la Free Software Foundation, ya sea la versión 3 de la Licencia o
-// (a su elección) cualquier versión posterior.
+// bajo los tï¿½rminos de la Licencia Pï¿½blica General de GNU publicada por
+// la Free Software Foundation, ya sea la versiï¿½n 3 de la Licencia o
+// (a su elecciï¿½n) cualquier versiï¿½n posterior.
 //
-// Moodle se distribuye con la esperanza de que sea útil,
-// pero SIN NINGUNA GARANTÍA; ni siquiera la garantía implícita de
-// COMERCIABILIDAD o IDONEIDAD PARA UN PROPÓSITO PARTICULAR. Consulte la
-// Licencia Pública General de GNU para obtener más detalles.
+// Moodle se distribuye con la esperanza de que sea ï¿½til,
+// pero SIN NINGUNA GARANTï¿½A; ni siquiera la garantï¿½a implï¿½cita de
+// COMERCIABILIDAD o IDONEIDAD PARA UN PROPï¿½SITO PARTICULAR. Consulte la
+// Licencia Pï¿½blica General de GNU para obtener mï¿½s detalles.
 //
-// Debería haber recibido una copia de la Licencia Pública General de GNU
-// junto con Moodle. De no ser así, consulte <http://www.gnu.org/licenses/>.
+// Deberï¿½a haber recibido una copia de la Licencia Pï¿½blica General de GNU
+// junto con Moodle. De no ser asï¿½, consulte <http://www.gnu.org/licenses/>.
 
 /**
- * Configuraciones y valores predeterminados de autenticación de servicio web externo.
+ * Configuraciones y valores predeterminados de autenticaciï¿½n de servicio web externo.
  * @package auth_wsr
  * @copyright 2025 UNER FCEDU
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->libdir . '/authlib.php');
 
 if ($ADMIN->fulltree) {
 
@@ -74,7 +75,7 @@ if ($ADMIN->fulltree) {
 
     $encryptoptions = [
         'md5'    => 'MD5 (compatibilidad / legado)',
-        'bcrypt' => 'bcrypt (recomendado, más seguro)'
+        'bcrypt' => 'bcrypt (recomendado, mÃ¡s seguro)'
     ];
 
     $settings->add(new admin_setting_configselect(
